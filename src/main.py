@@ -1,19 +1,25 @@
 import cv2
 import sys
+from models import FaceDetectionBaseline
+from data import Image
 
-# Load the cascade
-face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-# Read the input image
-img_name = sys.argv[1]
-img = cv2.imread(img_name)
-# Convert into grayscale
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-# Detect faces
-faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-# Draw rectangle around the faces
-for (x, y, w, h) in faces:
-    cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
-# Display the output
-cv2.imwrite('edited_'+img_name,img)
-cv2.imshow('img',img)
-cv2.waitKey()
+def main(file_path):
+    #load image
+    input_image = Image(file_path)
+
+    #initialise classifier
+    classifier = FaceDetectionBaseline()
+
+    # perform classification
+    coordinates = classifier.detect_face(input_image)
+
+    # plot result
+    for (x, y, w, h) in coordinates:
+        cv2.rectangle(input_image.img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+    input_image.show()
+    cv2.waitKey()
+
+if __name__=='__main__':
+    file_path = sys.argv[1]
+    main(file_path)
